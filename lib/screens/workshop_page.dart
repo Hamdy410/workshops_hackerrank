@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:workshops_hackerrank/widgets/instructor_selection_dialog.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 class WorkshopPage extends StatefulWidget {
   const WorkshopPage({super.key});
@@ -24,25 +24,6 @@ class _WorkshopPageState extends State<WorkshopPage> {
     "Bob",
     "Charlie",
   ];
-
-  void _showInstructorDialog() {
-    print("Showing Instructor Selection Dialog");
-    showDialog(
-      context: context, // Ensure correct context
-      builder: (BuildContext context) {
-        return InstructorSelectionDialog(
-          allInstructors: _allInstructors,
-          selectedInstructors: _selectedInstructors,
-          onSelectionChanged: (selected) {
-            setState(() {
-              _selectedInstructors.clear();
-              _selectedInstructors.addAll(selected);
-            });
-          },
-        );
-      },
-    );
-  }
 
   Future<void> _pickDateRange(BuildContext context) async {
     DateTime today = DateTime.now();
@@ -94,7 +75,7 @@ class _WorkshopPageState extends State<WorkshopPage> {
   }
 
   void _showAddInstructorDialog() {
-    final TextEditingController _nameController = TextEditingController();
+    final TextEditingController nameController = TextEditingController();
 
     showDialog(
       context: context,
@@ -102,7 +83,7 @@ class _WorkshopPageState extends State<WorkshopPage> {
         return AlertDialog(
           title: const Text('Add New Instructor'),
           content: TextField(
-            controller: _nameController,
+            controller: nameController,
             decoration: const InputDecoration(
               labelText: 'Instructor Name',
             ),
@@ -110,7 +91,7 @@ class _WorkshopPageState extends State<WorkshopPage> {
           actions: [
             TextButton(
               onPressed: () {
-                _addInstructor(_nameController.text.trim());
+                _addInstructor(nameController.text.trim());
                 Navigator.of(context).pop();
               },
               child: const Text('Add'),
@@ -124,6 +105,41 @@ class _WorkshopPageState extends State<WorkshopPage> {
       },
     );
   }
+
+  void _showManageInstructorsDialog() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Manage Instructors'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            MultiSelectDialogField(
+              items: _allInstructors.map((instructor) => MultiSelectItem<String>(instructor, instructor)).toList(),
+              initialValue: _selectedInstructors,
+              title: const Text("Select Instructors"),
+              searchable: true,
+              onConfirm: (values) {
+                setState(() {
+                  _selectedInstructors.clear();
+                  _selectedInstructors.addAll(values);
+                });
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -224,7 +240,7 @@ class _WorkshopPageState extends State<WorkshopPage> {
                 runSpacing: 8.0,
                 children: [
                   ElevatedButton(
-                    onPressed: _showInstructorDialog,
+                    onPressed: _showManageInstructorsDialog,
                     child: const Text("Manage Instructors"),
                   ),
                   ElevatedButton(

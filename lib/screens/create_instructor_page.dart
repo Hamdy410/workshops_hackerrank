@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 class CreateInstructorPage extends StatelessWidget {
   final TextEditingController _newInstructorController = TextEditingController();
 
+  CreateInstructorPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
